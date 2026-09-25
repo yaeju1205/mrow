@@ -1,7 +1,37 @@
+--[=[
+    @class mrow
+
+    A parser combinator library: small parsers that read one thing, and combinators
+    that glue them into a grammar.
+
+    A parser is just a function over a [ParserData] that returns a [ParserResult] —
+    either the values it read, or the errors explaining why it could not. Parsers
+    never throw, so a result is always checked, never caught.
+
+    ```lua
+    const mrow = require("./src")
+
+    const point = mrow.between(
+        mrow.token(mrow.string("(")),
+        mrow.map(mrow.separated(mrow.token(mrow.integer), mrow.token(mrow.string(","))), function(values: { number })
+            return { x = values[1], y = values[2] }
+        end),
+        mrow.token(mrow.string(")"))
+    )
+
+    const parsed = mrow.parse("(1, 2)", point)
+    if parsed.failed then
+        print(parsed.error:format())
+    else
+        const value = parsed:unwrap()
+        print(value.x, value.y) --> 1 2
+    end
+    ```
+]=]
+const mrow = {}
+
 const parser = require("./src/parser")
 const result = require("./src/result")
-
-const mrow = {}
 
 mrow.parser = parser
 mrow.result = result

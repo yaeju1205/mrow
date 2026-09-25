@@ -1,6 +1,21 @@
 const parser = require("../parser")
 const result = require("../result")
 
+--[=[
+    @tag atomic
+    @param expected string -- The exact text to match
+    @return Parser<string>
+
+    Builds a parser that matches `expected` literally and returns it. The position is
+    restored when the match breaks halfway, so a failure consumes nothing and the next
+    alternative in a [mrow.choice] still sees the whole text.
+
+    ```lua
+    const let = mrow.string("let")
+    mrow.parse("let", let):unwrap() --> "let"
+    mrow.parse("les", let).failed --> true -- and nothing was consumed
+    ```
+]=]
 return function(expected: string): parser.Parser<string>
     const expected_length = utf8.len(expected) or 0
 

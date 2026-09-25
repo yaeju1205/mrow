@@ -1,6 +1,23 @@
 const parser = require("../parser")
 const result = require("../result")
 
+--[=[
+    @tag combinator
+    @param target Parser<T...>
+    @param transform (T...) -> U -- Receives every value `target` produced
+    @return Parser<U>
+
+    Runs `target` and hands its values to `transform`, so a parser can produce a value
+    of your own shape instead of the raw characters it matched.
+
+    ```lua
+    const word = mrow.map(mrow.some(mrow.one_of("abc")), function(chars: { string }): string
+        return table.concat(chars)
+    end)
+
+    mrow.parse("cab", word):unwrap() --> "cab"
+    ```
+]=]
 return function<U, T...>(target: parser.Parser<T...>, transform: (T...) -> U): parser.Parser<U>
     return function(data: parser.ParserData): parser.ParserResult<U>
         const parsed = target(data)

@@ -1,6 +1,19 @@
 const parser = require("../parser")
 const result = require("../result")
 
+--[=[
+    @tag primitive
+    @param data ParserData
+    @return ParserResult<number>
+
+    Reads one or more decimal digits and returns them as a number. A sign is not part
+    of the syntax here, use [mrow.integer] for that.
+
+    ```lua
+    mrow.parse("0042", mrow.natural):unwrap() --> 42
+    mrow.parse("-1", mrow.natural).failed --> true
+    ```
+]=]
 return function(data: parser.ParserData): parser.ParserResult<number>
     const state = parser.save(data)
     local parsed_data = ""

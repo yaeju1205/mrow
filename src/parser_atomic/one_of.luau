@@ -1,6 +1,19 @@
 const parser = require("../parser")
 const satisfy = require("./satisfy")
 
+--[=[
+    @tag atomic
+    @param chars string -- The allowed characters, written as one string
+    @return Parser<string>
+
+    Builds a parser that consumes one character out of `chars`.
+
+    ```lua
+    const digit = mrow.one_of("0123456789")
+    mrow.parse("7", digit):unwrap() --> "7"
+    mrow.parse("x", digit).failed --> true
+    ```
+]=]
 return function(chars: string): parser.Parser<string>
     const allowed: { [string]: true } = {}
 

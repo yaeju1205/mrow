@@ -2,6 +2,20 @@ const parser = require("../parser")
 const result = require("../result")
 const many = require("./many")
 
+--[=[
+    @tag combinator
+    @param item Parser<T>
+    @return Parser<{ T }>
+
+    Like [mrow.many], but demands at least one match: with none, it fails with the
+    error `item` gave and consumes nothing.
+
+    ```lua
+    const digits = mrow.some(mrow.one_of("0123456789"))
+    #mrow.parse("42", digits):unwrap() --> 2
+    mrow.parse("", digits).failed --> true
+    ```
+]=]
 return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
     const rest = many(item)
 
