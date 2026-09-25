@@ -11,7 +11,7 @@ const result = require("../result")
     Every other atomic parser is built on top of this one; reach for it when a
     character class is easier to write as code than as a list of characters.
 
-    ```lua
+    ```luau
     const upper = mrow.satisfy("uppercase letter", function(char: string): boolean
         return char:lower() ~= char
     end)

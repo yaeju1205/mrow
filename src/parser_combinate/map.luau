@@ -10,7 +10,7 @@ const result = require("../result")
     Runs `target` and hands its values to `transform`, so a parser can produce a value
     of your own shape instead of the raw characters it matched.
 
-    ```lua
+    ```luau
     const word = mrow.map(mrow.some(mrow.one_of("abc")), function(chars: { string }): string
         return table.concat(chars)
     end)

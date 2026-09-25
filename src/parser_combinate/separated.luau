@@ -12,7 +12,7 @@ const result = require("../result")
     no item behind it is left unconsumed, so a trailing comma stays for the parser
     that comes next to complain about.
 
-    ```lua
+    ```luau
     const list = mrow.separated(mrow.integer, mrow.string(","))
     mrow.parse("1,2,3", list):unwrap() --> { 1, 2, 3 }
     mrow.parse("", list):unwrap() --> {}

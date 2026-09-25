@@ -9,7 +9,7 @@ const result = require("../result")
     Reads one or more decimal digits and returns them as a number. A sign is not part
     of the syntax here, use [mrow.integer] for that.
 
-    ```lua
+    ```luau
     mrow.parse("0042", mrow.natural):unwrap() --> 42
     mrow.parse("-1", mrow.natural).failed --> true
     ```

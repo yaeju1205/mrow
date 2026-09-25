@@ -8,7 +8,7 @@ const parser = require("../parser")
     Consumes the next character, whatever it is, and returns it.
     Fails when the input is already exhausted.
 
-    ```lua
+    ```luau
     mrow.parse("a", mrow.any):unwrap() --> "a"
     mrow.parse("", mrow.any).failed --> true
     ```

@@ -8,7 +8,7 @@ const parser = require("../parser")
     Defers building a parser until it first runs, then keeps it. This is what ties a
     recursive grammar together, where a parser has to mention itself before it exists.
 
-    ```lua
+    ```luau
     local expression: mrow.Parser<number>
 
     const atom = mrow.choice(

@@ -10,7 +10,7 @@ const parser = require("../parser")
     pointing at where `target` started, so a deep grammar reports one readable
     expectation instead of every internal attempt it made.
 
-    ```lua
+    ```luau
     const identifier = mrow.label("identifier", mrow.some(mrow.one_of("abcdefghijklmnopqrstuvwxyz")))
     mrow.parse("1", identifier).error:format() --> ... expected identifier
     ```

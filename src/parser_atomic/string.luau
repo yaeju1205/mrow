@@ -10,7 +10,7 @@ const result = require("../result")
     restored when the match breaks halfway, so a failure consumes nothing and the next
     alternative in a [mrow.choice] still sees the whole text.
 
-    ```lua
+    ```luau
     const let = mrow.string("let")
     mrow.parse("let", let):unwrap() --> "let"
     mrow.parse("les", let).failed --> true -- and nothing was consumed

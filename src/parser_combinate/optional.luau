@@ -10,7 +10,7 @@ const result = require("../result")
     simply be absent. Every parser in this library rewinds itself when it fails, so a
     missing match leaves the position untouched.
 
-    ```lua
+    ```luau
     const sign = mrow.optional(mrow.string("-"))
     mrow.parse_partial("-1", sign):unwrap() --> "-"
     mrow.parse_partial("1", sign):unwrap() --> nil

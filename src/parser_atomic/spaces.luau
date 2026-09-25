@@ -16,7 +16,7 @@ const WHITESPACE: { [string]: true } = {
     Consumes whitespace (space, `\t`, `\n`, `\r`) until something else shows up,
     and returns the text it ate. Never fails: eating nothing is a success with `""`.
 
-    ```lua
+    ```luau
     mrow.parse("  \n", mrow.spaces):unwrap() --> "  \n"
     mrow.parse_partial("a", mrow.spaces):unwrap() --> ""
     ```

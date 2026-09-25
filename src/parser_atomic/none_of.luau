@@ -9,7 +9,7 @@ const satisfy = require("./satisfy")
     Builds a parser that consumes one character, as long as it is not one of `chars`.
     The mirror of [mrow.one_of].
 
-    ```lua
+    ```luau
     const text_char = mrow.none_of("\"\\")
     mrow.parse("a", text_char):unwrap() --> "a"
     mrow.parse("\"", text_char).failed --> true

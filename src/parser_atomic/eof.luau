@@ -10,7 +10,7 @@ const result = require("../result")
     [mrow.parse] already runs it after the target parser, so it is only needed
     inside a grammar that has to assert the end of input by itself.
 
-    ```lua
+    ```luau
     const whole_line = mrow.sequence(mrow.some(mrow.none_of("\n")), mrow.eof)
     mrow.parse_partial("abc", whole_line).failed --> false
     mrow.parse_partial("abc\n", whole_line).failed --> true

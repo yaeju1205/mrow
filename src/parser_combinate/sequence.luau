@@ -11,7 +11,7 @@ const result = require("../result")
     rewinds to where it started. To keep a value out of the middle, reach for
     [mrow.between] or give the pieces to [mrow.map] yourself.
 
-    ```lua
+    ```luau
     const assignment = mrow.sequence(mrow.string("a"), mrow.string("="), mrow.natural)
     mrow.parse("a=1", assignment).failed --> false
     mrow.parse("a=x", assignment).failed --> true -- and nothing was consumed

@@ -8,7 +8,7 @@ const satisfy = require("./satisfy")
 
     Builds a parser that consumes one character out of `chars`.
 
-    ```lua
+    ```luau
     const digit = mrow.one_of("0123456789")
     mrow.parse("7", digit):unwrap() --> "7"
     mrow.parse("x", digit).failed --> true

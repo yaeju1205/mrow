@@ -12,7 +12,7 @@ const result = require("../result")
     message lists each thing that could have been there — wrap it in [mrow.label] to
     report one expectation instead.
 
-    ```lua
+    ```luau
     const boolean = mrow.choice(mrow.string("true"), mrow.string("false"))
     mrow.parse("false", boolean):unwrap() --> "false"
     mrow.parse("maybe", boolean).failed --> true

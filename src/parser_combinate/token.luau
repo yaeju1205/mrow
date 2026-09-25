@@ -10,7 +10,7 @@ const spaces = require("../parser_atomic/spaces")
     starts on meaningful input. Leading whitespace is nobody's token — eat it once, at
     the very start of the grammar, and let every token clean up after itself.
 
-    ```lua
+    ```luau
     const number = mrow.token(mrow.integer)
     const list = mrow.separated(number, mrow.token(mrow.string(",")))
 

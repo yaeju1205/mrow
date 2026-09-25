@@ -10,7 +10,7 @@ const many = require("./many")
     Like [mrow.many], but demands at least one match: with none, it fails with the
     error `item` gave and consumes nothing.
 
-    ```lua
+    ```luau
     const digits = mrow.some(mrow.one_of("0123456789"))
     #mrow.parse("42", digits):unwrap() --> 2
     mrow.parse("", digits).failed --> true

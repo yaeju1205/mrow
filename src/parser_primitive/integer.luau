@@ -10,7 +10,7 @@ const natural_number = require("./natural_number")
     Reads a decimal number with an optional leading `+` or `-`. A lone sign with no
     digits after it fails and consumes nothing.
 
-    ```lua
+    ```luau
     mrow.parse("-42", mrow.integer):unwrap() --> -42
     mrow.parse("+7", mrow.integer):unwrap() --> 7
     mrow.parse("-", mrow.integer).failed --> true

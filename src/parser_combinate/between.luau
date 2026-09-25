@@ -11,7 +11,7 @@ const result = require("../result")
     Runs `open`, `inner` and `close` in order and keeps only what `inner` produced.
     A failure after `open` rewinds to where the whole parser started.
 
-    ```lua
+    ```luau
     const parens = mrow.between(mrow.string("("), mrow.integer, mrow.string(")"))
     mrow.parse("(-3)", parens):unwrap() --> -3
     mrow.parse("(-3", parens).failed --> true

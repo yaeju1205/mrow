@@ -8,7 +8,7 @@
     either the values it read, or the errors explaining why it could not. Parsers
     never throw, so a result is always checked, never caught.
 
-    ```lua
+    ```luau
     const mrow = require("./src")
 
     const point = mrow.between(
