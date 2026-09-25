@@ -1,0 +1,4 @@
+{
+    "luau-lsp.fflags.enableNewSolver": true,
+    "luau-lsp.platform.type": "standard"
+}
