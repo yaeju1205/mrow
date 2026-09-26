@@ -1,7 +1,6 @@
 # mrow
 
-A parser combinator library for [Luau](https://luau.org). Parsers never throw — they
-return a result you check.
+A parser combinator library for [Luau](https://luau.org)
 
 ## Usage
 
