@@ -1,4 +1,4 @@
-syntax = "Luau" # 필수. 없으면 f<<T>>(...)가 시프트 연산으로 바뀝니다.
+syntax = "Luau"
 column_width = 120
 line_endings = "Unix"
 indent_type = "Spaces"
