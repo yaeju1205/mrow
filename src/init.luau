@@ -30,34 +30,34 @@
 ]=]
 const mrow = {}
 
-const parser = require("./src/parser")
-const result = require("./src/result")
+const parser = require("@self/parser")
+const result = require("@self/result")
 
 mrow.parser = parser
 mrow.result = result
 
-mrow.string = require("./src/parser_atomic/string")
-mrow.satisfy = require("./src/parser_atomic/satisfy")
-mrow.any = require("./src/parser_atomic/any")
-mrow.one_of = require("./src/parser_atomic/one_of")
-mrow.none_of = require("./src/parser_atomic/none_of")
-mrow.spaces = require("./src/parser_atomic/spaces")
-mrow.eof = require("./src/parser_atomic/eof")
+mrow.string = require("@self/parser_atomic/string")
+mrow.satisfy = require("@self/parser_atomic/satisfy")
+mrow.any = require("@self/parser_atomic/any")
+mrow.one_of = require("@self/parser_atomic/one_of")
+mrow.none_of = require("@self/parser_atomic/none_of")
+mrow.spaces = require("@self/parser_atomic/spaces")
+mrow.eof = require("@self/parser_atomic/eof")
 
-mrow.natural = require("./src/parser_primitive/natural_number")
-mrow.integer = require("./src/parser_primitive/integer")
+mrow.natural = require("@self/parser_primitive/natural_number")
+mrow.integer = require("@self/parser_primitive/integer")
 
-mrow.choice = require("./src/parser_combinate/choice")
-mrow.sequence = require("./src/parser_combinate/sequence")
-mrow.many = require("./src/parser_combinate/many")
-mrow.some = require("./src/parser_combinate/some")
-mrow.optional = require("./src/parser_combinate/optional")
-mrow.map = require("./src/parser_combinate/map")
-mrow.between = require("./src/parser_combinate/between")
-mrow.separated = require("./src/parser_combinate/separated")
-mrow.token = require("./src/parser_combinate/token")
-mrow.lazy = require("./src/parser_combinate/lazy")
-mrow.label = require("./src/parser_combinate/label")
+mrow.choice = require("@self/parser_combinate/choice")
+mrow.sequence = require("@self/parser_combinate/sequence")
+mrow.many = require("@self/parser_combinate/many")
+mrow.some = require("@self/parser_combinate/some")
+mrow.optional = require("@self/parser_combinate/optional")
+mrow.map = require("@self/parser_combinate/map")
+mrow.between = require("@self/parser_combinate/between")
+mrow.separated = require("@self/parser_combinate/separated")
+mrow.token = require("@self/parser_combinate/token")
+mrow.lazy = require("@self/parser_combinate/lazy")
+mrow.label = require("@self/parser_combinate/label")
 
 export type Parser<T...> = parser.Parser<T...>
 export type ParserData = parser.ParserData
