@@ -27,9 +27,9 @@ return function(data: parser.ParserData): parser.ParserResult<number>
 
         if char == "-" then
             sign = -1
-            parser.consume(data)
+            data.position += 1
         elseif char == "+" then
-            parser.consume(data)
+            data.position += 1
         end
     end
 

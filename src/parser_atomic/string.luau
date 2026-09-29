@@ -17,29 +17,43 @@ const result = require("../result")
     ```
 ]=]
 return function(expected: string): parser.Parser<string>
-    const expected_length = utf8.len(expected) or 0
+    -- Split once here, so a match compares codepoints instead of re-slicing
+    -- `expected` for every character it reads.
+    const expected_chars: { string } = {}
+    local newlines = 0
+
+    if utf8.len(expected) then
+        for _, code in utf8.codes(expected) do
+            const char = utf8.char(code)
+            table.insert(expected_chars, char)
+
+            if char == "\n" then
+                newlines += 1
+            end
+        end
+    end
+
+    const expected_length = #expected_chars
+    const matched = if expected_length == 0 then "" else expected
 
     return function(data: parser.ParserData): parser.ParserResult<string>
-        const state = parser.save(data)
-        local got = ""
+        const chars = data.chars
+        const start = data.position
 
-        for i=1, expected_length do
-            const char_result = parser.consume(data)
-            if char_result.failed then
-                parser.restore(data, state)
-
+        for i = 1, expected_length do
+            const position = start + i - 1
+            if position > data.length then
                 return parser.fail(data, `expected '{expected}', got end of input`)
             end
 
-            got ..= char_result:unwrap()
-
-            if string.sub(expected, 1, #got) ~= got then
-                parser.restore(data, state)
-
-                return parser.fail(data, `expected '{expected}', got '{got}'`)
+            if chars[position] ~= expected_chars[i] then
+                return parser.fail(data, `expected '{expected}', got '{table.concat(chars, "", start, position)}'`)
             end
         end
 
-        return result.success(got)
+        data.position = start + expected_length
+        data.line += newlines
+
+        return result.success(matched)
     end
 end

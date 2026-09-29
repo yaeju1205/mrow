@@ -15,31 +15,25 @@ const result = require("../result")
     ```
 ]=]
 return function(data: parser.ParserData): parser.ParserResult<number>
-    const state = parser.save(data)
-    local parsed_data = ""
+    const chars = data.chars
+    const start = data.position
+    local position = start
 
-    while true do
-        const char_result = parser.peek(data)
-        if char_result.failed then
-            break
-        end
-
-        const char = char_result:unwrap()
-
+    while position <= data.length do
+        const char = chars[position]
         if char < "0" or char > "9" then
             break
         end
 
-        parser.consume(data)
-        parsed_data ..= char
+        position += 1
     end
 
-    const number = tonumber(parsed_data)
+    const number = tonumber(table.concat(chars, "", start, position - 1))
     if not number then
-        parser.restore(data, state)
-
         return parser.fail(data, `expected natural number, got end of input`)
     end
+
+    data.position = position
 
     return result.success(number)
 end

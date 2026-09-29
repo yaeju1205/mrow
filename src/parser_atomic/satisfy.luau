@@ -22,17 +22,21 @@ const result = require("../result")
 ]=]
 return function(description: string, predicate: (string) -> boolean): parser.Parser<string>
     return function(data: parser.ParserData): parser.ParserResult<string>
-        const char_result = parser.peek(data)
-        if char_result.failed then
+        const position = data.position
+        if position > data.length then
             return parser.fail(data, `expected {description}, got end of input`)
         end
 
-        const char = char_result:unwrap()
+        const char = data.chars[position]
         if not predicate(char) then
             return parser.fail(data, `expected {description}, got '{char}'`)
         end
 
-        parser.consume(data)
+        if char == "\n" then
+            data.line += 1
+        end
+
+        data.position = position + 1
 
         return result.success(char)
     end

@@ -22,22 +22,24 @@ const WHITESPACE: { [string]: true } = {
     ```
 ]=]
 return function(data: parser.ParserData): parser.ParserResult<string>
-    local eaten = ""
+    const chars = data.chars
+    const start = data.position
+    local position = start
 
-    while true do
-        const char_result = parser.peek(data)
-        if char_result.failed then
-            break
-        end
-
-        const char = char_result:unwrap()
+    while position <= data.length do
+        const char = chars[position]
         if WHITESPACE[char] == nil then
             break
         end
 
-        parser.consume(data)
-        eaten ..= char
+        if char == "\n" then
+            data.line += 1
+        end
+
+        position += 1
     end
 
-    return result.success(eaten)
+    data.position = position
+
+    return result.success(table.concat(chars, "", start, position - 1))
 end
