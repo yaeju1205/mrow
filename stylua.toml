@@ -1,0 +1,13 @@
+syntax = "Luau" # 필수. 없으면 f<<T>>(...)가 시프트 연산으로 바뀝니다.
+column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 4
+quote_style = "AutoPreferDouble"
+call_parentheses = "Input"
+space_after_function_names = "Never"
+block_newline_gaps = "Never"
+collapse_simple_statement = "Never"
+
+[sort_requires]
+enabled = true
