@@ -34,7 +34,7 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
             return others
         end
 
-        const values = { first:unwrap() }
+        const values = { (first:unwrap()) }
         for _, value in others:unwrap() do
             table.insert(values, value)
         end

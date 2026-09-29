@@ -27,10 +27,11 @@ return function<T, S>(item: parser.Parser<T>, separator: parser.Parser<S>): pars
             return result.success(values)
         end
 
-        table.insert(values, first:unwrap())
+        table.insert(values, (first:unwrap()))
 
         while true do
             const state = parser.save(data)
+            const before = data.position
 
             const separated = separator(data)
             if separated.failed then
@@ -44,7 +45,11 @@ return function<T, S>(item: parser.Parser<T>, separator: parser.Parser<S>): pars
                 break
             end
 
-            table.insert(values, next_item:unwrap())
+            table.insert(values, (next_item:unwrap()))
+
+            if data.position == before then
+                break
+            end
         end
 
         return result.success(values)

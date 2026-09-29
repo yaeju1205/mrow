@@ -29,7 +29,7 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
                 break
             end
 
-            table.insert(values, parsed:unwrap())
+            table.insert(values, (parsed:unwrap()))
 
             if data.position == before then
                 break
