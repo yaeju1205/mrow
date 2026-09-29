@@ -1,0 +1,5 @@
+[tools]
+luau = "0.734"
+"github:JohnnyMorganz/luau-lsp" = "1.69.0"
+stylua = "2.5.2"
+"github:pesde-pkg/pesde" = "0.7.4+registry.0.2.3"
