@@ -8,6 +8,11 @@ const parser = require("../parser")
     Defers building a parser until it first runs, then keeps it. This is what ties a
     recursive grammar together, where a parser has to mention itself before it exists.
 
+    Let recursion go through `lazy` rather than a hand-written `function(data) return
+    expression(data) end`: `lazy` hands each level back to the trampoline, so nesting
+    depth is bounded by memory, while a plain call stacks up and overflows after a few
+    thousand levels.
+
     ```luau
     local expression: mrow.Parser<number>
 
@@ -36,6 +41,9 @@ return function<T...>(make: () -> parser.Parser<T...>): parser.Parser<T...>
         const target: parser.Parser<T...> = made or make()
         made = target
 
-        return target(data)
+        -- Not a leaf, so whoever runs this goes through the trampoline: recursion
+        -- always passes a lazy, and each level returns to the driver instead of
+        -- stacking Lua calls. `target` itself answers straight away.
+        return (target :: any)(data)
     end
 end

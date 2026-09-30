@@ -1,4 +1,7 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
+
+const step = trampoline.step
 
 --[=[
     @tag combinator
@@ -16,12 +19,26 @@ const parser = require("../parser")
     ```
 ]=]
 return function<T>(item: parser.Parser<T>): parser.Parser<T?>
-    return function(data: parser.ParserData): parser.ParserResult<T?>
-        const parsed = item(data)
+    if trampoline.is_leaves(item) then
+        return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<T?>
+            const parsed = item(data)
+            if parsed.failed then
+                return parser.success(nil)
+            end
+
+            return parser.success(parsed:unwrap())
+        end)
+    end
+
+    const function continue(parsed: any): ...any
         if parsed.failed then
             return parser.success(nil)
         end
 
         return parser.success(parsed:unwrap())
+    end
+
+    return function(data: parser.ParserData): ...any
+        return step(item, data, continue)
     end
 end

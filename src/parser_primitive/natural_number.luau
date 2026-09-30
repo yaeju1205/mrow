@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 --[=[
     @tag primitive
@@ -13,7 +14,7 @@ const parser = require("../parser")
     mrow.parse("-1", mrow.natural).failed --> true
     ```
 ]=]
-return function(data: parser.ParserData): parser.ParserResult<number>
+return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<number>
     const chars = data.chars
     const start = data.char_index
     local index = start
@@ -40,4 +41,4 @@ return function(data: parser.ParserData): parser.ParserResult<number>
     data.position.column += index - start
 
     return parser.success(number)
-end
+end)

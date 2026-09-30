@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 --[=[
     @tag atomic
@@ -39,7 +40,7 @@ return function(expected: string): parser.Parser<string>
     const expected_length = #expected_chars
     const matched = if expected_length == 0 then "" else expected
 
-    return function(data: parser.ParserData): parser.ParserResult<string>
+    return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<string>
         const chars = data.chars
         const start = data.char_index
 
@@ -65,5 +66,5 @@ return function(expected: string): parser.Parser<string>
         end
 
         return parser.success(matched)
-    end
+    end)
 end

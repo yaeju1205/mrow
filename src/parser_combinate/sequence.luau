@@ -1,4 +1,7 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
+
+const step = trampoline.step
 
 --[=[
     @tag combinator
@@ -20,19 +23,43 @@ const function sequence(...: parser.Parser<...any>): parser.Parser<never>
     const parsers = { ... }
     const parser_count = #parsers
 
-    return function(data: parser.ParserData): parser.ParserResult<...any>
-        const state = parser.store(data)
+    if trampoline.is_leaves(...) then
+        return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<...any>
+            const state = parser.store(data)
 
-        for i = 1, parser_count do
-            const parsed = parsers[i](data)
+            for i = 1, parser_count do
+                const parsed = parsers[i](data)
+                if parsed.failed then
+                    parser.restore(data, state)
+
+                    return parsed
+                end
+            end
+
+            return parser.success()
+        end)
+    end
+
+    return function(data: parser.ParserData): ...any
+        const state = parser.store(data)
+        local i = 1
+
+        local function continue(parsed: any): ...any
             if parsed.failed then
                 parser.restore(data, state)
 
                 return parsed
             end
+
+            i += 1
+            if i > parser_count then
+                return parser.success()
+            end
+
+            return step(parsers[i], data, continue)
         end
 
-        return parser.success()
+        return step(parsers[1], data, continue)
     end
 end
 

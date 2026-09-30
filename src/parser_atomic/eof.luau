@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 --[=[
     @tag atomic
@@ -15,11 +16,11 @@ const parser = require("../parser")
     mrow.parse_partial("abc\n", whole_line).failed --> true
     ```
 ]=]
-return function(data: parser.ParserData): parser.ParserResult<()>
+return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<()>
     const char_result = parser.peek(data)
     if char_result.failed then
         return parser.success()
     end
 
     return parser.fail(data, `expected end of input, got '{char_result:unwrap()}'`)
-end
+end)

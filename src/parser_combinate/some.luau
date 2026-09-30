@@ -1,4 +1,7 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
+
+const step = trampoline.step
 const many = require("./many")
 
 --[=[
@@ -18,26 +21,53 @@ const many = require("./many")
 return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
     const rest = many(item)
 
-    return function(data: parser.ParserData): parser.ParserResult<{ T }>
+    if trampoline.is_leaves(item) then
+        return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<{ T }>
+            const state = parser.store(data)
+
+            const first = item(data)
+            if first.failed then
+                return first
+            end
+
+            const others = rest(data)
+            if others.failed then
+                parser.restore(data, state)
+
+                return others
+            end
+
+            const values = { (first:unwrap()) }
+            for _, value in others:unwrap() do
+                table.insert(values, value)
+            end
+
+            return parser.success(values)
+        end)
+    end
+
+    return function(data: parser.ParserData): ...any
         const state = parser.store(data)
 
-        const first = item(data)
-        if first.failed then
-            return first
-        end
+        return step(item, data, function(first: any): ...any
+            if first.failed then
+                return first
+            end
 
-        const others = rest(data)
-        if others.failed then
-            parser.restore(data, state)
+            return step(rest, data, function(others: any): ...any
+                if others.failed then
+                    parser.restore(data, state)
 
-            return others
-        end
+                    return others
+                end
 
-        const values = { (first:unwrap()) }
-        for _, value in others:unwrap() do
-            table.insert(values, value)
-        end
+                const values = { (first:unwrap()) }
+                for _, value in others:unwrap() do
+                    table.insert(values, value)
+                end
 
-        return parser.success(values)
+                return parser.success(values)
+            end)
+        end)
     end
 end

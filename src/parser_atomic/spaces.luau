@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 const WHITESPACE: { [string]: true } = {
     [" "] = true,
@@ -20,7 +21,7 @@ const WHITESPACE: { [string]: true } = {
     mrow.parse_partial("a", mrow.spaces):unwrap() --> ""
     ```
 ]=]
-return function(data: parser.ParserData): parser.ParserResult<string>
+return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<string>
     const chars = data.chars
     const position = data.position
     const start = data.char_index
@@ -45,4 +46,4 @@ return function(data: parser.ParserData): parser.ParserResult<string>
     data.char_index = index
 
     return parser.success(table.concat(chars, "", start, index - 1))
-end
+end)

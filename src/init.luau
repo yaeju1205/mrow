@@ -31,8 +31,13 @@
 const mrow = {}
 
 const parser = require("@self/parser")
+const trampoline = require("@self/trampoline")
 
 mrow.parser = parser
+
+mrow.run = trampoline.run
+mrow.leaf = trampoline.leaf
+mrow.CALL = trampoline.CALL
 
 mrow.string = require("@self/parser_atomic/string")
 mrow.satisfy = require("@self/parser_atomic/satisfy")
@@ -68,7 +73,7 @@ export type ParserResult<T...> = parser.ParserResult<T...>
 function mrow.parse<T...>(input: string, target: parser.Parser<T...>): parser.ParserResult<T...>
     const data = parser.load_data(input)
 
-    const parsed = target(data)
+    const parsed = trampoline.run(target, data)
     if parsed.failed then
         return parsed
     end
@@ -82,7 +87,7 @@ function mrow.parse<T...>(input: string, target: parser.Parser<T...>): parser.Pa
 end
 
 function mrow.parse_partial<T...>(input: string, target: parser.Parser<T...>): parser.ParserResult<T...>
-    return target(parser.load_data(input))
+    return trampoline.run(target, parser.load_data(input))
 end
 
 return mrow

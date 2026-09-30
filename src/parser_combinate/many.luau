@@ -1,4 +1,7 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
+
+const step = trampoline.step
 
 --[=[
     @tag combinator
@@ -17,24 +20,49 @@ const parser = require("../parser")
     ```
 ]=]
 return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
-    return function(data: parser.ParserData): parser.ParserResult<{ T }>
+    if trampoline.is_leaves(item) then
+        return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<{ T }>
+            const values: { T } = {}
+
+            while true do
+                const before = data.char_index
+
+                const parsed = item(data)
+                if parsed.failed then
+                    break
+                end
+
+                table.insert(values, (parsed:unwrap()))
+
+                if data.char_index == before then
+                    break
+                end
+            end
+
+            return parser.success(values)
+        end)
+    end
+
+    return function(data: parser.ParserData): ...any
         const values: { T } = {}
+        local before = data.char_index
 
-        while true do
-            const before = data.char_index
-
-            const parsed = item(data)
+        local function continue(parsed: any): ...any
             if parsed.failed then
-                break
+                return parser.success(values)
             end
 
             table.insert(values, (parsed:unwrap()))
 
             if data.char_index == before then
-                break
+                return parser.success(values)
             end
+
+            before = data.char_index
+
+            return step(item, data, continue)
         end
 
-        return parser.success(values)
+        return step(item, data, continue)
     end
 end

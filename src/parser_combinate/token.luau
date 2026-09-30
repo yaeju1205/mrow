@@ -1,4 +1,7 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
+
+const step = trampoline.step
 const spaces = require("../parser_atomic/spaces")
 
 --[=[
@@ -18,14 +21,28 @@ const spaces = require("../parser_atomic/spaces")
     ```
 ]=]
 return function<T...>(target: parser.Parser<T...>): parser.Parser<T...>
-    return function(data: parser.ParserData): parser.ParserResult<T...>
-        const parsed = target(data)
-        if parsed.failed then
+    if trampoline.is_leaves(target) then
+        return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<T...>
+            const parsed = target(data)
+            if parsed.failed then
+                return parsed
+            end
+
+            spaces(data)
+
             return parsed
-        end
+        end)
+    end
 
-        spaces(data)
+    return function(data: parser.ParserData): ...any
+        return step(target, data, function(parsed: any): ...any
+            if parsed.failed then
+                return parsed
+            end
 
-        return parsed
+            spaces(data)
+
+            return parsed
+        end)
     end
 end

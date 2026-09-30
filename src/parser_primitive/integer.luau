@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 const natural_number = require("./natural_number")
 
 --[=[
@@ -15,7 +16,7 @@ const natural_number = require("./natural_number")
     mrow.parse("-", mrow.integer).failed --> true
     ```
 ]=]
-return function(data: parser.ParserData): parser.ParserResult<number>
+return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<number>
     const state = parser.store(data)
 
     local sign = 1
@@ -42,4 +43,4 @@ return function(data: parser.ParserData): parser.ParserResult<number>
     end
 
     return parser.success(sign * digits:unwrap())
-end
+end)

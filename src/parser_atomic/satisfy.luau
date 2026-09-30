@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 --[=[
     @tag atomic
@@ -20,7 +21,7 @@ const parser = require("../parser")
     ```
 ]=]
 return function(description: string, predicate: (string) -> boolean): parser.Parser<string>
-    return function(data: parser.ParserData): parser.ParserResult<string>
+    return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<string>
         const index = data.char_index
         if index > data.chars_length then
             return parser.fail(data, `expected {description}, got end of input`)
@@ -41,5 +42,5 @@ return function(description: string, predicate: (string) -> boolean): parser.Par
         data.char_index = index + 1
 
         return parser.success(char)
-    end
+    end)
 end

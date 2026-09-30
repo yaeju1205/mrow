@@ -1,4 +1,5 @@
 const parser = require("../parser")
+const trampoline = require("../trampoline")
 
 --[=[
     @tag atomic
@@ -13,11 +14,11 @@ const parser = require("../parser")
     mrow.parse("", mrow.any).failed --> true
     ```
 ]=]
-return function(data: parser.ParserData): parser.ParserResult<string>
+return trampoline.leaf(function(data: parser.ParserData): parser.ParserResult<string>
     const char_result = parser.consume(data)
     if char_result.failed then
         return parser.fail(data, "expected any character, got end of input")
     end
 
     return char_result
-end
+end)
