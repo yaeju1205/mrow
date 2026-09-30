@@ -80,5 +80,68 @@ do
     equal(data.char_index, 1, "string consumes nothing on failure")
 end
 
+-- B6: natural names the character it found, and says end of input only at the end
+do
+    const has_message = support.has_message
+
+    has_message(support.fails(mrow.parse("abc", mrow.natural)), "expected natural number, got 'a'")
+    has_message(support.fails(mrow.parse("", mrow.natural)), "expected natural number, got end of input")
+    has_message(support.fails(mrow.parse("가1", mrow.natural)), "expected natural number, got '가'")
+
+    const signed = support.fails(mrow.parse("--5", mrow.integer))
+    has_message(signed, "expected natural number, got '-'")
+    equal(signed.errors[1].position.column, 2, "integer reports after the sign")
+    has_message(support.fails(mrow.parse("-", mrow.integer)), "got end of input")
+end
+
+-- B7: recursion through lazy runs on the trampoline, not the Lua call stack
+do
+    local expression: mrow.Parser<number>
+    expression = mrow.choice(
+        mrow.integer,
+        mrow.between(
+            mrow.string("("),
+            mrow.lazy(function()
+                return expression
+            end),
+            mrow.string(")")
+        )
+    )
+
+    const depth = 50000 -- the old limit was 6,663
+    equal(ok(mrow.parse(string.rep("(", depth) .. "7" .. string.rep(")", depth), expression)), 7)
+
+    -- an error raised deep inside keeps its own message
+    local failing: mrow.Parser<number>
+    failing = mrow.choice(
+        mrow.map(mrow.string("x"), function(_: string): number
+            error("callback failed", 0)
+        end),
+        mrow.between(
+            mrow.string("("),
+            mrow.lazy(function()
+                return failing
+            end),
+            mrow.string(")")
+        )
+    )
+
+    const ran, message = pcall(mrow.parse, string.rep("(", depth) .. "x" .. string.rep(")", depth), failing)
+    assert(not ran, "expected the callback error to propagate")
+    equal(message, "callback failed", "error message")
+
+    -- a hand-written parser gets another, non-leaf parser's result through mrow.run
+    const function doubled(data: mrow.ParserData): mrow.ParserResult<number>
+        const parsed = mrow.run(expression, data)
+        if parsed.failed then
+            return parsed
+        end
+
+        return mrow.parser.success(parsed:unwrap() * 2)
+    end
+
+    equal(ok(mrow.parse("((21))", doubled)), 42)
+end
+
 print("regressions: ok")
 return true

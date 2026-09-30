@@ -75,7 +75,7 @@ end
 function support.run<T...>(input: string, target: mrow.Parser<T...>): (mrow.ParserResult<T...>, mrow.ParserData)
     const data = mrow.parser.load_data(input)
 
-    return target(data), data
+    return mrow.run(target, data), data
 end
 
 return support
