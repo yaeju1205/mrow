@@ -27,7 +27,7 @@ const point = mrow.between(
 const parsed = mrow.parse("(1, 2)", point)
 
 if parsed.failed then
-    print(parsed.error:format())
+    print(parsed:format())
 else
     const value = parsed:unwrap()
     print(value.x, value.y) --> 1 2
