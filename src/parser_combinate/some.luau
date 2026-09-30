@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 const many = require("./many")
 
 --[=[
@@ -20,7 +19,7 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
     const rest = many(item)
 
     return function(data: parser.ParserData): parser.ParserResult<{ T }>
-        const state = parser.save(data)
+        const state = parser.store(data)
 
         const first = item(data)
         if first.failed then
@@ -39,6 +38,6 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
             table.insert(values, value)
         end
 
-        return result.success(values)
+        return parser.success(values)
     end
 end

@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag atomic
@@ -17,27 +16,30 @@ const result = require("../result")
     end)
 
     mrow.parse("A", upper):unwrap() --> "A"
-    mrow.parse("a", upper).error:format() --> ... expected uppercase letter, got 'a'
+    mrow.parse("a", upper):format() --> ... expected uppercase letter, got 'a'
     ```
 ]=]
 return function(description: string, predicate: (string) -> boolean): parser.Parser<string>
     return function(data: parser.ParserData): parser.ParserResult<string>
-        const position = data.position
-        if position > data.length then
+        const index = data.char_index
+        if index > data.chars_length then
             return parser.fail(data, `expected {description}, got end of input`)
         end
 
-        const char = data.chars[position]
+        const char = data.chars[index]
         if not predicate(char) then
             return parser.fail(data, `expected {description}, got '{char}'`)
         end
 
         if char == "\n" then
-            data.line += 1
+            data.position.line += 1
+            data.position.column = 1
+        else
+            data.position.column += 1
         end
 
-        data.position = position + 1
+        data.char_index = index + 1
 
-        return result.success(char)
+        return parser.success(char)
     end
 end

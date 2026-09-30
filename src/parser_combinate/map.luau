@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -25,6 +24,6 @@ return function<U, T...>(target: parser.Parser<T...>, transform: (T...) -> U): p
             return parsed
         end
 
-        return result.success(transform(parsed:unwrap()))
+        return parser.success(transform(parsed:unwrap()))
     end
 end

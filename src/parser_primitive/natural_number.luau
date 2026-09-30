@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag primitive
@@ -16,24 +15,29 @@ const result = require("../result")
 ]=]
 return function(data: parser.ParserData): parser.ParserResult<number>
     const chars = data.chars
-    const start = data.position
-    local position = start
+    const start = data.char_index
+    local index = start
 
-    while position <= data.length do
-        const char = chars[position]
+    while index <= data.chars_length do
+        const char = chars[index]
         if char < "0" or char > "9" then
             break
         end
 
-        position += 1
+        index += 1
     end
 
-    const number = tonumber(table.concat(chars, "", start, position - 1))
+    const number = tonumber(table.concat(chars, "", start, index - 1))
     if not number then
-        return parser.fail(data, `expected natural number, got end of input`)
+        if start > data.chars_length then
+            return parser.fail(data, `expected natural number, got end of input`)
+        end
+
+        return parser.fail(data, `expected natural number, got '{chars[start]}'`)
     end
 
-    data.position = position
+    data.char_index = index
+    data.position.column += index - start
 
-    return result.success(number)
+    return parser.success(number)
 end

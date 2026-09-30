@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 const natural_number = require("./natural_number")
 
 --[=[
@@ -17,7 +16,7 @@ const natural_number = require("./natural_number")
     ```
 ]=]
 return function(data: parser.ParserData): parser.ParserResult<number>
-    const state = parser.save(data)
+    const state = parser.store(data)
 
     local sign = 1
 
@@ -25,11 +24,13 @@ return function(data: parser.ParserData): parser.ParserResult<number>
     if not first.failed then
         const char = first:unwrap()
 
-        if char == "-" then
-            sign = -1
-            data.position += 1
-        elseif char == "+" then
-            data.position += 1
+        if char == "-" or char == "+" then
+            if char == "-" then
+                sign = -1
+            end
+
+            data.char_index += 1
+            data.position.column += 1
         end
     end
 
@@ -40,5 +41,5 @@ return function(data: parser.ParserData): parser.ParserResult<number>
         return digits
     end
 
-    return result.success(sign * digits:unwrap())
+    return parser.success(sign * digits:unwrap())
 end

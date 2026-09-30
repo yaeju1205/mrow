@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -8,7 +7,7 @@ const result = require("../result")
 
     Returns the result of the first alternative that succeeds. The position is restored
     before each attempt, so alternatives are free to share a prefix. When they all fail,
-    every one of their errors is collected into the returned [ParserErrors], so the
+    every one of their errors is collected into the returned [ParserFailed], so the
     message lists each thing that could have been there — wrap it in [mrow.label] to
     report one expectation instead.
 
@@ -23,7 +22,7 @@ return function<T...>(...: parser.Parser<T...>): parser.Parser<T...>
     const parser_count = #parsers
 
     return function(data: parser.ParserData): parser.ParserResult<T...>
-        const state = parser.save(data)
+        const state = parser.store(data)
         const errors: { parser.ParserError } = {}
 
         for i=1, parser_count do
@@ -33,7 +32,7 @@ return function<T...>(...: parser.Parser<T...>): parser.Parser<T...>
                 return parsed_result
             end
 
-            const failed = parsed_result.error.errors
+            const failed = parsed_result.errors
             for j=1, #failed do
                 table.insert(errors, failed[j])
             end
@@ -41,6 +40,10 @@ return function<T...>(...: parser.Parser<T...>): parser.Parser<T...>
             parser.restore(data, state)
         end
 
-        return result.failed(parser.errors(errors))
+        return {
+            failed = true,
+            errors = errors,
+            format = parser.format,
+        }
     end
 end

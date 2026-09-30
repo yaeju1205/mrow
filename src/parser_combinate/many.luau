@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -22,7 +21,7 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
         const values: { T } = {}
 
         while true do
-            const before = data.position
+            const before = data.char_index
 
             const parsed = item(data)
             if parsed.failed then
@@ -31,11 +30,11 @@ return function<T>(item: parser.Parser<T>): parser.Parser<{ T }>
 
             table.insert(values, (parsed:unwrap()))
 
-            if data.position == before then
+            if data.char_index == before then
                 break
             end
         end
 
-        return result.success(values)
+        return parser.success(values)
     end
 end

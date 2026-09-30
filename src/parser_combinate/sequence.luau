@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -22,7 +21,7 @@ const function sequence(...: parser.Parser<...any>): parser.Parser<never>
     const parser_count = #parsers
 
     return function(data: parser.ParserData): parser.ParserResult<...any>
-        const state = parser.save(data)
+        const state = parser.store(data)
 
         for i = 1, parser_count do
             const parsed = parsers[i](data)
@@ -33,7 +32,7 @@ const function sequence(...: parser.Parser<...any>): parser.Parser<never>
             end
         end
 
-        return result.success()
+        return parser.success()
     end
 end
 

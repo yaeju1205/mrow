@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -19,7 +18,7 @@ const result = require("../result")
 ]=]
 return function<O, T, C>(open: parser.Parser<O>, inner: parser.Parser<T>, close: parser.Parser<C>): parser.Parser<T>
     return function(data: parser.ParserData): parser.ParserResult<T>
-        const state = parser.save(data)
+        const state = parser.store(data)
 
         const opened = open(data)
         if opened.failed then
@@ -40,6 +39,6 @@ return function<O, T, C>(open: parser.Parser<O>, inner: parser.Parser<T>, close:
             return closed
         end
 
-        return result.success(value:unwrap())
+        return parser.success(value:unwrap())
     end
 end

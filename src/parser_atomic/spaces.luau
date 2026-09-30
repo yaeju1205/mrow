@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 const WHITESPACE: { [string]: true } = {
     [" "] = true,
@@ -23,23 +22,27 @@ const WHITESPACE: { [string]: true } = {
 ]=]
 return function(data: parser.ParserData): parser.ParserResult<string>
     const chars = data.chars
-    const start = data.position
-    local position = start
+    const position = data.position
+    const start = data.char_index
+    local index = start
 
-    while position <= data.length do
-        const char = chars[position]
+    while index <= data.chars_length do
+        const char = chars[index]
         if WHITESPACE[char] == nil then
             break
         end
 
         if char == "\n" then
-            data.line += 1
+            position.line += 1
+            position.column = 1
+        else
+            position.column += 1
         end
 
-        position += 1
+        index += 1
     end
 
-    data.position = position
+    data.char_index = index
 
-    return result.success(table.concat(chars, "", start, position - 1))
+    return parser.success(table.concat(chars, "", start, index - 1))
 end

@@ -21,7 +21,7 @@
 
     const parsed = mrow.parse("(1, 2)", point)
     if parsed.failed then
-        print(parsed.error:format())
+        print(parsed:format())
     else
         const value = parsed:unwrap()
         print(value.x, value.y) --> 1 2
@@ -31,10 +31,8 @@
 const mrow = {}
 
 const parser = require("@self/parser")
-const result = require("@self/result")
 
 mrow.parser = parser
-mrow.result = result
 
 mrow.string = require("@self/parser_atomic/string")
 mrow.satisfy = require("@self/parser_atomic/satisfy")
@@ -61,9 +59,10 @@ mrow.label = require("@self/parser_combinate/label")
 
 export type Parser<T...> = parser.Parser<T...>
 export type ParserData = parser.ParserData
-export type ParserState = parser.ParserState
+export type ParserPosition = parser.ParserPosition
 export type ParserError = parser.ParserError
-export type ParserErrors = parser.ParserErrors
+export type ParserSuccess<T...> = parser.ParserSuccess<T...>
+export type ParserFailed = parser.ParserFailed
 export type ParserResult<T...> = parser.ParserResult<T...>
 
 function mrow.parse<T...>(input: string, target: parser.Parser<T...>): parser.ParserResult<T...>

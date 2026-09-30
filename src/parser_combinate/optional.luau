@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -20,9 +19,9 @@ return function<T>(item: parser.Parser<T>): parser.Parser<T?>
     return function(data: parser.ParserData): parser.ParserResult<T?>
         const parsed = item(data)
         if parsed.failed then
-            return result.success(nil)
+            return parser.success(nil)
         end
 
-        return result.success(parsed:unwrap())
+        return parser.success(parsed:unwrap())
     end
 end

@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag atomic
@@ -21,6 +20,7 @@ return function(expected: string): parser.Parser<string>
     -- `expected` for every character it reads.
     const expected_chars: { string } = {}
     local newlines = 0
+    local last_line_length = 0
 
     if utf8.len(expected) then
         for _, code in utf8.codes(expected) do
@@ -29,6 +29,9 @@ return function(expected: string): parser.Parser<string>
 
             if char == "\n" then
                 newlines += 1
+                last_line_length = 0
+            else
+                last_line_length += 1
             end
         end
     end
@@ -38,22 +41,29 @@ return function(expected: string): parser.Parser<string>
 
     return function(data: parser.ParserData): parser.ParserResult<string>
         const chars = data.chars
-        const start = data.position
+        const start = data.char_index
 
         for i = 1, expected_length do
-            const position = start + i - 1
-            if position > data.length then
+            const index = start + i - 1
+            if index > data.chars_length then
                 return parser.fail(data, `expected '{expected}', got end of input`)
             end
 
-            if chars[position] ~= expected_chars[i] then
-                return parser.fail(data, `expected '{expected}', got '{table.concat(chars, "", start, position)}'`)
+            if chars[index] ~= expected_chars[i] then
+                return parser.fail(data, `expected '{expected}', got '{table.concat(chars, "", start, index)}'`)
             end
         end
 
-        data.position = start + expected_length
-        data.line += newlines
+        data.char_index = start + expected_length
 
-        return result.success(matched)
+        const position = data.position
+        if newlines == 0 then
+            position.column += expected_length
+        else
+            position.line += newlines
+            position.column = last_line_length + 1
+        end
+
+        return parser.success(matched)
     end
 end

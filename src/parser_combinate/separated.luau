@@ -1,5 +1,4 @@
 const parser = require("../parser")
-const result = require("../result")
 
 --[=[
     @tag combinator
@@ -24,14 +23,14 @@ return function<T, S>(item: parser.Parser<T>, separator: parser.Parser<S>): pars
 
         const first = item(data)
         if first.failed then
-            return result.success(values)
+            return parser.success(values)
         end
 
         table.insert(values, (first:unwrap()))
 
         while true do
-            const state = parser.save(data)
-            const before = data.position
+            const state = parser.store(data)
+            const before = data.char_index
 
             const separated = separator(data)
             if separated.failed then
@@ -47,11 +46,11 @@ return function<T, S>(item: parser.Parser<T>, separator: parser.Parser<S>): pars
 
             table.insert(values, (next_item:unwrap()))
 
-            if data.position == before then
+            if data.char_index == before then
                 break
             end
         end
 
-        return result.success(values)
+        return parser.success(values)
     end
 end

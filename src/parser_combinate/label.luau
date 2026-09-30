@@ -12,12 +12,12 @@ const parser = require("../parser")
 
     ```luau
     const identifier = mrow.label("identifier", mrow.some(mrow.one_of("abcdefghijklmnopqrstuvwxyz")))
-    mrow.parse("1", identifier).error:format() --> ... expected identifier
+    mrow.parse("1", identifier):format() --> ... expected identifier
     ```
 ]=]
 return function<T...>(description: string, target: parser.Parser<T...>): parser.Parser<T...>
     return function(data: parser.ParserData): parser.ParserResult<T...>
-        const state = parser.save(data)
+        const state = parser.store(data)
 
         const parsed = target(data)
         if not parsed.failed then
