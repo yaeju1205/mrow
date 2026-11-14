@@ -14,13 +14,13 @@ return function(context: parser.ParserContext)
         context.column += 1
     end
 
-    parser.stack_frame_push(context, function(ctx)
-        if ctx.return_error then
+    parser.stack_frame_push(context, function(context)
+        if context.return_error then
             return
         end
 
-        local uint = ctx.return_value
-        ctx.return_value = sign * uint
+        local uint = context.return_value
+        context.return_value = sign * uint
     end)
 
     parser.stack_frame_push(context, unsigned_integer)

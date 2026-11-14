@@ -126,7 +126,7 @@ export type ParserSuccess<T> = {
 
 export type Parser<T> = (string) -> ParserFailed | ParserSuccess<T>
 
-function parser.create<T>(root_frame: ParserFrame): Parser<T>
+function parser.create<T>(frame: ParserFrame): Parser<T>
     return function(source: string)
         const context = parser.context(source)
 
@@ -137,17 +137,17 @@ function parser.create<T>(root_frame: ParserFrame): Parser<T>
             }
         end
 
-        context.stack_callee[1] = root_frame
+        context.stack_callee[1] = frame
 
         while true do
-            local current_parser = parser.stack_frame_pop(context)
+            const frame = parser.stack_frame_pop(context)
 
-            if not current_parser then
+            if not frame then
                 break
             end
 
-            current_parser(context)
-            context.return_from = current_parser
+            frame(context)
+            context.return_from = frame
         end
 
         if context.return_error then
