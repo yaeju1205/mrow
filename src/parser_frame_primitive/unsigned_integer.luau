@@ -1,13 +1,27 @@
 const parser = require("../parser")
 
+--[=[
+    @tag primitive
+    @param context ParserContext
+
+    Reads one or more decimal digits and returns them as a number. A sign is not part
+    of the syntax here, use [mrow.integer] for that.
+
+    ```luau
+    mrow.create(mrow.unsigned_integer)("0042").value --> 42
+    mrow.create(mrow.unsigned_integer)("-1").success --> false
+    ```
+]=]
 return function(context: parser.ParserContext)
+    const source = context.source
     const start_offset = context.offset
     local offset = start_offset
 
     while true do
-        const char = context.chars[offset]
+        const byte = string.byte(source, offset)
 
-        if not char or char < "0" or char > "9" then
+        -- 0-9
+        if not byte or byte < 48 or byte > 57 then
             break
         end
 
@@ -15,11 +29,14 @@ return function(context: parser.ParserContext)
     end
 
     if start_offset == offset then
-        context.return_error = `expected unsigned int, but got '{parser.peek(context)}'`
+        const char = parser.peek(context)
+        context.return_error = if char
+            then `expected unsigned int, but got '{char}'`
+            else "expected unsigned int, but got end of input"
         return
     end
 
-    const uint_str = table.concat(context.chars, "", start_offset, offset - 1)
+    const uint_str = string.sub(source, start_offset, offset - 1)
     const uint = tonumber(uint_str)
 
     if not uint then
@@ -28,6 +45,5 @@ return function(context: parser.ParserContext)
     end
 
     context.offset = offset
-    context.column += start_offset - offset
     context.return_value = uint
 end

@@ -4,69 +4,59 @@ export type ParserFrame = (ParserContext) -> ()
 
 export type ParserContext = {
     source: string,
-    chars: { [number]: string },
-    chars_length: number,
-    line: number,
-    column: number,
+    length: number,
     offset: number,
-    stack_callee: { [number]: ParserFrame },
+    stack_callee: { ParserFrame },
     stack_top: number,
-    return_from: ParserFrame?,
+    stack_value: { any },
+    stack_value_top: number,
+    running: { [ParserFrame]: { [number]: any } },
     return_value: any,
     return_error: any,
 }
 
 function parser.context(source: string): ParserContext?
-    const input_length = utf8.len(source)
-    if not input_length then
+    if not utf8.len(source) then
         return nil
-    end
-
-    const chars = table.create<<string>>(input_length)
-
-    local index = 1
-    for _, code in utf8.codes(source) do
-        chars[index] = utf8.char(code)
-        index += 1
     end
 
     return {
         source = source,
-        chars = chars,
-        chars_length = #chars,
-        line = 1,
-        column = 1,
+        length = #source,
         offset = 1,
         stack_callee = {},
-        stack_caller = {},
-        stack_top = 1,
-        return_from = nil,
+        stack_top = 0,
+        stack_value = {},
+        stack_value_top = 0,
+        running = {},
         return_value = nil,
         return_error = nil,
     }
 end
 
 function parser.peek(context: ParserContext): string?
-    return context.chars[context.offset]
-end
+    const offset = context.offset
 
-function parser.next(context: ParserContext): string?
-    const peeked_char = parser.peek(context)
-
-    if not peeked_char then
+    if offset > context.length then
         return nil
     end
 
-    context.offset += 1
-
-    if peeked_char == "\n" then
-        context.column = 1
-        context.line += 1
-    else
-        context.column += 1
+    const next_offset = utf8.offset(context.source, 2, offset)
+    if not next_offset then
+        return nil
     end
 
-    return peeked_char
+    return string.sub(context.source, offset, next_offset - 1)
+end
+
+function parser.next(context: ParserContext): string?
+    const char = parser.peek(context)
+
+    if char then
+        context.offset += #char
+    end
+
+    return char
 end
 
 function parser.stack_frame_push(context: ParserContext, frame: ParserFrame)
@@ -76,42 +66,28 @@ function parser.stack_frame_push(context: ParserContext, frame: ParserFrame)
     context.stack_callee[top] = frame
 end
 
-function parser.stack_frame_pop(context: ParserContext): ParserFrame?
-    const top = context.stack_top
+const NONE = table.freeze({})
 
-    if top == 0 then
+function parser.stack_value_push(context: ParserContext, value: any)
+    const top = context.stack_value_top + 1
+
+    context.stack_value_top = top
+    context.stack_value[top] = value == nil and NONE or value
+end
+
+function parser.stack_value_pop(context: ParserContext): any
+    const top = context.stack_value_top
+    const stack_value = context.stack_value
+    const value = stack_value[top]
+
+    stack_value[top] = nil
+    context.stack_value_top = top - 1
+
+    if value == NONE then
         return nil
     end
 
-    const frame = context.stack_callee[top]
-
-    context.stack_callee[top] = nil
-    context.stack_top = top - 1
-
-    return frame
-end
-
-export type ParserSnapshot = {
-    offset: number,
-    line: number,
-    column: number,
-    stack_top: number,
-}
-
-function parser.snapshot_save(context: ParserContext): ParserSnapshot
-    return {
-        offset = context.offset,
-        line = context.line,
-        column = context.column,
-        stack_top = context.stack_top,
-    }
-end
-
-function parser.snapshot_restore(context: ParserContext, snapshot: ParserSnapshot)
-    context.offset = snapshot.offset
-    context.line = snapshot.line
-    context.column = snapshot.column
-    context.stack_top = snapshot.stack_top
+    return value
 end
 
 export type ParserFailed = {
@@ -137,17 +113,21 @@ function parser.create<T>(frame: ParserFrame): Parser<T>
             }
         end
 
-        context.stack_callee[1] = frame
+        const stack_callee = context.stack_callee
+        parser.stack_frame_push(context, frame)
 
         while true do
-            const frame = parser.stack_frame_pop(context)
+            const top = context.stack_top
 
-            if not frame then
+            if top == 0 then
                 break
             end
 
+            const frame = stack_callee[top]
+            stack_callee[top] = nil
+            context.stack_top = top - 1
+
             frame(context)
-            context.return_from = frame
         end
 
         if context.return_error then
