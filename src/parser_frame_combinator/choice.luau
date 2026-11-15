@@ -34,15 +34,17 @@ return function(...: parser.ParserFrame): parser.ParserFrame
             return
         end
 
-        if error ~= "left recursion has no result yet" then
-            errors = if errors then `{errors} or {error}` else error
+        if errors then
+            errors ..= ` or {error}`
+        else
+            errors = error
         end
 
         context.return_error = nil
         context.offset = start
 
         if index == frame_count then
-            context.return_error = errors or "left recursion has no result yet"
+            context.return_error = errors
             return
         end
 
@@ -55,7 +57,7 @@ return function(...: parser.ParserFrame): parser.ParserFrame
 
     return function(context: parser.ParserContext)
         if frame_count == 0 then
-            context.return_error = "left recursion has no result yet"
+            context.return_error = "choice parser combinator: expected just parser, but got nothing"
             return
         end
 
