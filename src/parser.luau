@@ -61,13 +61,18 @@ function parser.stack_frame_push(context: ParserContext, frame: ParserFrame)
     context.stack_callee[top] = frame
 end
 
-const NONE = table.freeze({})
+parser.stack_value_nil = table.freeze({})
 
 function parser.stack_value_push(context: ParserContext, value: any)
     const top = context.stack_value_top + 1
 
     context.stack_value_top = top
-    context.stack_value[top] = value == nil and NONE or value
+
+    if value == nil then
+        context.stack_value[top] = parser.stack_value_nil
+    else
+        context.stack_value[top] = value
+    end
 end
 
 function parser.stack_value_pop(context: ParserContext): any
@@ -78,7 +83,7 @@ function parser.stack_value_pop(context: ParserContext): any
     stack_value[top] = nil
     context.stack_value_top = top - 1
 
-    if value == NONE then
+    if value == parser.stack_value_nil then
         return nil
     end
 
