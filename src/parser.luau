@@ -19,7 +19,7 @@ export type ParserContext = {
 function parser.context(source: string): ParserContext?
     const input_length = utf8.len(source)
     if not input_length then
-        return
+        return nil
     end
 
     const chars = table.create<<string>>(input_length)
@@ -54,7 +54,7 @@ function parser.next(context: ParserContext): string?
     const peeked_char = parser.peek(context)
 
     if not peeked_char then
-        return
+        return nil
     end
 
     context.offset += 1
@@ -127,7 +127,7 @@ export type ParserSuccess<T> = {
 export type Parser<T> = (string) -> ParserFailed | ParserSuccess<T>
 
 function parser.create<T>(frame: ParserFrame): Parser<T>
-    return function(source: string)
+    return function(source: string): ParserSuccess<T> | ParserFailed
         const context = parser.context(source)
 
         if not context then
