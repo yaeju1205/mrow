@@ -1,8 +1,6 @@
 # mrow
 
-A parser combinator library for Luau. Parsers push frames onto an explicit stack
-instead of calling each other, so deeply nested input never overflows the call stack.
-It also supports left recursion and reads input as UTF-8.
+A parser combinator library for Luau
 
 ```luau
 const mrow = require(path to require)
