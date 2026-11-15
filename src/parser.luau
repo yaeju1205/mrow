@@ -36,11 +36,6 @@ end
 
 function parser.peek(context: ParserContext): string?
     const offset = context.offset
-
-    if offset > context.length then
-        return nil
-    end
-
     const next_offset = utf8.offset(context.source, 2, offset)
     if not next_offset then
         return nil
