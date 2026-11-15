@@ -99,7 +99,8 @@ return function(make_frame: () -> parser.ParserFrame): parser.ParserFrame
         local seed_registry = running_seeds[frame]
 
         if not seed_registry then
-            running_seeds[frame] = {}
+            seed_registry = {}
+            running_seeds[frame] = seed_registry
         end
 
         const offset = context.offset
