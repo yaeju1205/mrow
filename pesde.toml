@@ -1,12 +1,15 @@
 name = "yaeju1205/mrow"
 version = "0.1.0"
 description = "A parser combinator library for Luau"
-authors = ["yaeju1205"]
+authors = [ "yaeju1205" ]
 repository = "https://github.com/yaeju1205/mrow"
 license = "MIT"
+includes = [ "src/**/*", "pesde.toml", "README.md", "LICENSE" ]
 
 [target]
 environment = "luau"
+lib = "src/init.luau"
+build_files = [ "src" ]
 
 [indices]
 default = "https://github.com/pesde-pkg/index"
