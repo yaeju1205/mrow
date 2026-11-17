@@ -1,0 +1,12 @@
+name = "yaeju1205/mrow"
+version = "0.1.0"
+description = "A parser combinator library for Luau"
+authors = ["yaeju1205"]
+repository = "https://github.com/yaeju1205/mrow"
+license = "MIT"
+
+[target]
+environment = "luau"
+
+[indices]
+default = "https://github.com/pesde-pkg/index"
