@@ -27,5 +27,3 @@ if result.success then
 else
     print(result.error)
 end
-
-return nil
