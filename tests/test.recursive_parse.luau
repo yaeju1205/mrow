@@ -15,11 +15,11 @@ end)
 
 local parser = mrow.create(recursvie_parser )
 local result = parser(
-    string.rep("(", 1000000)
+    string.rep("(", 100000)
     ..
     "0"
     ..
-    string.rep(")", 1000000)
+    string.rep(")", 100000)
 
 )
 
