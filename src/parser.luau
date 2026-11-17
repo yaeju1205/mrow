@@ -10,7 +10,6 @@ export type ParserContext = {
     stack_top: number,
     stack_value: { any },
     stack_value_top: number,
-    running: { [ParserFrame]: { [number]: any } },
     return_value: any,
     return_error: any,
 }
@@ -28,7 +27,6 @@ function parser.context(source: string): ParserContext?
         stack_top = 0,
         stack_value = {},
         stack_value_top = 0,
-        running = {},
         return_value = nil,
         return_error = nil,
     }
