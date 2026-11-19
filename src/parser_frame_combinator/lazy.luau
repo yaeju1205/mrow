@@ -10,25 +10,8 @@ const parser = require("../parser")
     Combinators push frames onto the context's stack instead of calling each other, so
     deeply nested input does not grow the Luau call stack.
 
-    Left recursion is supported: when the rule reaches itself before consuming any
-    input, that call fails at first and then answers with the longest result so far,
-    and the rule reruns until the result stops growing. Define the rule itself as the
-    `lazy`, so the outermost call goes through it too:
-
-    ```luau
-    local expression: mrow.ParserFrame
-
-    expression = mrow.lazy(function()
-        return mrow.choice(
-            mrow.sequence(expression, mrow.string("+"), mrow.integer),
-            mrow.integer
-        )
-    end)
-
-    mrow.create(mrow.sequence(expression, mrow.eof))("1+2+3").success --> true
-    ```
-
-    Plain recursion needs nothing special:
+    A rule that reaches itself before consuming any input never stops; define it with
+    [mrow.left_recursive] instead.
 
     ```luau
     local expression: mrow.ParserFrame

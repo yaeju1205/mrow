@@ -26,6 +26,7 @@ mrow.between = require("@self/parser_frame_combinator/between")
 mrow.separated = require("@self/parser_frame_combinator/separated")
 mrow.token = require("@self/parser_frame_combinator/token")
 mrow.lazy = require("@self/parser_frame_combinator/lazy")
+mrow.left_recursive = require("@self/parser_frame_combinator/left_recursive")
 mrow.label = require("@self/parser_frame_combinator/label")
 
 export type ParserFrame = parser.ParserFrame

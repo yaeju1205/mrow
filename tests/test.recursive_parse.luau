@@ -15,7 +15,7 @@ recursvie_parser = mrow.lazy(function()
     )
 end)
 
-const depth = 10 ^ 4
+const depth = 10 ^ 5
 
 const parser = mrow.create(recursvie_parser )
 const start_clock = os.clock()

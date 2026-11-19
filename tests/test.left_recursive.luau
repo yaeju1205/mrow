@@ -2,7 +2,7 @@ const mrow = require("../src")
 
 local left_recursvie
 
-left_recursvie = mrow.lazy(function()
+left_recursvie = mrow.left_recursive(function()
     return mrow.choice(
         mrow.sequence(left_recursvie, mrow.one_of("$")),
         mrow.sequence()

@@ -12,6 +12,8 @@ export type ParserContext = {
     stack_value_top: number,
     return_value: any,
     return_error: any,
+    running: { [ParserFrame]: number },
+    seeds: { [ParserFrame]: { [number]: { offset: number?, value: any } } },
 }
 
 function parser.context(source: string): ParserContext?
@@ -29,6 +31,8 @@ function parser.context(source: string): ParserContext?
         stack_value_top = 0,
         return_value = nil,
         return_error = nil,
+        running = {},
+        seeds = {},
     }
 end
 
