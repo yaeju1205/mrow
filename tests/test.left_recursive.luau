@@ -4,13 +4,18 @@ local left_recursvie
 
 left_recursvie = mrow.lazy(function()
     return mrow.choice(
-        mrow.one_of("$"),
-        mrow.eof
+        mrow.sequence(left_recursvie, mrow.one_of("$")),
+        mrow.sequence()
     )
 end)
 
-local parser = mrow.create(left_recursvie)
-local result = parser(string.rep("$", 10000))
+const parser = mrow.create(left_recursvie)
+const start_clock = os.clock()
+const result = parser(string.rep("$", 10 ^ 6))
+
+print("time:", os.clock() - start_clock)
+print("success:", result.success)
+print("depth:", 10 ^ 6)
 
 if result.success then
     print(result.value)

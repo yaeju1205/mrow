@@ -1,3 +1,5 @@
+print("Recursive")
+
 const mrow = require("../src")
 
 local recursvie_parser
@@ -13,15 +15,20 @@ recursvie_parser = mrow.lazy(function()
     )
 end)
 
-local parser = mrow.create(recursvie_parser )
-local result = parser(
-    string.rep("(", 100000)
+const parser = mrow.create(recursvie_parser )
+const start_clock = os.clock()
+const result = parser(
+    string.rep("(", 10 ^ 5)
     ..
     "0"
     ..
-    string.rep(")", 100000)
+    string.rep(")", 10 ^ 5)
 
 )
+
+print("time:", os.clock() - start_clock)
+print("success:", result.success)
+print("depth:", 10 ^ 5)
 
 if result.success then
     print(result.value)
