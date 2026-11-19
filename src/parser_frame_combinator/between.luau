@@ -8,7 +8,7 @@ const parser = require("../parser")
     @return ParserFrame
 
     Runs `open`, `inner` and `close` in order and keeps only what `inner` produced.
-    A failure after `open` rewinds to where the whole parser started.
+    As soon as one of them fails, the whole parser fails.
 
     ```luau
     const parens = mrow.between(mrow.string("("), mrow.integer, mrow.string(")"))
@@ -17,22 +17,17 @@ const parser = require("../parser")
     ```
 ]=]
 return function(open: parser.ParserFrame, inner: parser.ParserFrame, close: parser.ParserFrame): parser.ParserFrame
-    -- Value stack: start, then (after inner) the value of inner.
+    -- Value stack: the value of inner.
     const function after_close(context: parser.ParserContext)
         const value = parser.stack_value_pop(context)
-        const start: number = parser.stack_value_pop(context)
 
-        if context.return_error then
-            context.offset = start
-            return
+        if not context.return_error then
+            context.return_value = value
         end
-
-        context.return_value = value
     end
 
     const function after_inner(context: parser.ParserContext)
         if context.return_error then
-            context.offset = parser.stack_value_pop(context)
             return
         end
 
@@ -43,7 +38,6 @@ return function(open: parser.ParserFrame, inner: parser.ParserFrame, close: pars
 
     const function after_open(context: parser.ParserContext)
         if context.return_error then
-            context.offset = parser.stack_value_pop(context)
             return
         end
 
@@ -52,7 +46,6 @@ return function(open: parser.ParserFrame, inner: parser.ParserFrame, close: pars
     end
 
     return function(context: parser.ParserContext)
-        parser.stack_value_push(context, context.offset)
         parser.stack_frame_push(context, after_open)
         parser.stack_frame_push(context, open)
     end

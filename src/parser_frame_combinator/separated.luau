@@ -18,9 +18,7 @@ const parser = require("../parser")
     ```
 ]=]
 return function(item: parser.ParserFrame, separator: parser.ParserFrame): parser.ParserFrame
-    -- Value stack: the values so far, how many there are, and where the last separator
-    -- started. A failed item rewinds to that separator, and an item and separator that
-    -- consumed nothing together end the list.
+    -- Value stack: the values, their count, and where the last separator started.
     local after_item: parser.ParserFrame
 
     const function push_state(context: parser.ParserContext, values: { any }, count: number, before: number)
@@ -71,11 +69,14 @@ return function(item: parser.ParserFrame, separator: parser.ParserFrame): parser
         parser.stack_frame_push(context, separator)
     end
 
+    -- Value stack: where the list started.
     const function after_first(context: parser.ParserContext)
+        const start: number = parser.stack_value_pop(context)
         const values: { any } = {}
 
         if context.return_error then
             context.return_error = nil
+            context.offset = start
             context.return_value = values
             return
         end
@@ -88,6 +89,7 @@ return function(item: parser.ParserFrame, separator: parser.ParserFrame): parser
     end
 
     return function(context: parser.ParserContext)
+        parser.stack_value_push(context, context.offset)
         parser.stack_frame_push(context, after_first)
         parser.stack_frame_push(context, item)
     end

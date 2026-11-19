@@ -20,14 +20,16 @@ print(parse("[1").error) --> "expected ']', but got end of input"
 
 `mrow.create(frame)` returns a function that turns a source string into
 `{ success = true, value = ... }` or `{ success = false, error = "..." }`.
-Every parser rewinds when it fails. End the grammar with `mrow.eof` when the whole
-input has to match.
+A failed parser may leave the position anywhere; the combinators that carry on after a
+failure (`choice`, `optional`, `many`, `some`, `separated`) rewind it themselves. End
+the grammar with `mrow.eof` when the whole input has to match.
 
 ## Custom frames
 
 A frame is a `(ParserContext) -> ()` function. To succeed, it sets
 `context.return_value` and advances `context.offset`. To fail, it sets
-`context.return_error`.
+`context.return_error`, and does not need to rewind. A frame that carries on after a
+failure instead has to put `context.offset` back itself.
 
 ```luau
 local function hex_digit(context: mrow.ParserContext)

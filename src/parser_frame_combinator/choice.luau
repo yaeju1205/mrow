@@ -21,38 +21,34 @@ return function(...: parser.ParserFrame): parser.ParserFrame
     const frames = { ... }
     const frame_count = #frames
 
-    -- Value stack: the alternative that just ran, where they all start, and what the
-    -- failed ones said so far.
-    local step: parser.ParserFrame
-    step = function(context: parser.ParserContext)
-        local errors: string? = parser.stack_value_pop(context)
-        const start: number = parser.stack_value_pop(context)
-        const index: number = parser.stack_value_pop(context)
-        const error = context.return_error
+    -- Value stack: where they all start, then the errors so far (from the second on).
+    const steps: { parser.ParserFrame } = {}
 
-        if not error then
-            return
+    for index = 1, frame_count do
+        steps[index] = function(context: parser.ParserContext)
+            const errors: string? = if index > 1 then parser.stack_value_pop(context) else nil
+            const start: number = parser.stack_value_pop(context)
+            const error = context.return_error
+
+            if not error then
+                return
+            end
+
+            context.offset = start
+
+            const joined = if errors then `{errors} or {error}` else error
+
+            if index == frame_count then
+                context.return_error = joined
+                return
+            end
+
+            context.return_error = nil
+            parser.stack_value_push(context, start)
+            parser.stack_value_push(context, joined)
+            parser.stack_frame_push(context, steps[index + 1])
+            parser.stack_frame_push(context, frames[index + 1])
         end
-
-        if errors then
-            errors ..= ` or {error}`
-        else
-            errors = error
-        end
-
-        context.return_error = nil
-        context.offset = start
-
-        if index == frame_count then
-            context.return_error = errors
-            return
-        end
-
-        parser.stack_value_push(context, index + 1)
-        parser.stack_value_push(context, start)
-        parser.stack_value_push(context, errors)
-        parser.stack_frame_push(context, step)
-        parser.stack_frame_push(context, frames[index + 1])
     end
 
     return function(context: parser.ParserContext)
@@ -61,10 +57,8 @@ return function(...: parser.ParserFrame): parser.ParserFrame
             return
         end
 
-        parser.stack_value_push(context, 1)
         parser.stack_value_push(context, context.offset)
-        parser.stack_value_push(context, nil)
-        parser.stack_frame_push(context, step)
+        parser.stack_frame_push(context, steps[1])
         parser.stack_frame_push(context, frames[1])
     end
 end

@@ -6,7 +6,7 @@ const parser = require("../parser")
     @return ParserFrame -- Produces a table of every value `item` produced
 
     Like [mrow.many], but demands at least one match: with none, it fails with the
-    error `item` gave and consumes nothing.
+    error `item` gave.
 
     ```luau
     const digits = mrow.some(mrow.one_of("0123456789"))
@@ -15,8 +15,7 @@ const parser = require("../parser")
     ```
 ]=]
 return function(item: parser.ParserFrame): parser.ParserFrame
-    -- Value stack: the values so far, how many there are (kept apart from `#values`,
-    -- so items that produce `nil` keep their place), and where the last item started.
+    -- Value stack: the values, their count, and where the last item started.
     local after_item: parser.ParserFrame
     after_item = function(context: parser.ParserContext)
         const before: number = parser.stack_value_pop(context)
@@ -29,6 +28,7 @@ return function(item: parser.ParserFrame): parser.ParserFrame
             end
 
             context.return_error = nil
+            context.offset = before
             context.return_value = values
             return
         end

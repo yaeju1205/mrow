@@ -15,20 +15,22 @@ recursvie_parser = mrow.lazy(function()
     )
 end)
 
+const depth = 10 ^ 4
+
 const parser = mrow.create(recursvie_parser )
 const start_clock = os.clock()
 const result = parser(
-    string.rep("(", 10 ^ 5)
+    string.rep("(", depth)
     ..
     "0"
     ..
-    string.rep(")", 10 ^ 5)
+    string.rep(")", depth)
 
 )
 
 print("time:", os.clock() - start_clock)
 print("success:", result.success)
-print("depth:", 10 ^ 5)
+print("depth:", depth)
 
 if result.success then
     print(result.value)
