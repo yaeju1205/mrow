@@ -18,6 +18,13 @@ print(parse(" [1] ").value) --> 1
 print(parse("[1").error) --> "expected ']', but got end of input"
 ```
 
+## Install
+
+pesde
+```sh
+pesde add yaeju1205/mrow
+```
+
 `mrow.create(frame)` returns a function that turns a source string into
 `{ success = true, value = ... }` or `{ success = false, error = "..." }`.
 A failed parser may leave the position anywhere; the combinators that carry on after a
